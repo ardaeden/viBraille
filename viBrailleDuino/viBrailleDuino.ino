@@ -16,6 +16,8 @@ t_dict notes[7] = { {'c', B100110},
 void setup() {
   // Open serial communications and wait for port to open:
   Serial.begin(9600);
+  pinMode(2, INPUT_PULLUP);
+  
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
@@ -74,6 +76,8 @@ void loop() {
         Serial.println(s[0]);
     }
   }
+if (digitalRead(2)==LOW) Serial.println("pressed");
+else Serial.println("Not Pressed");
 }
 
 
