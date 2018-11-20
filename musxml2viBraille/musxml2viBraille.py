@@ -3,8 +3,12 @@
 # by Arda Eden 2018               #
 ###################################
 
-
+import sys
 import xml.etree.ElementTree as ET
+
+if (len(sys.argv)<2):
+    print("Not enough arguments...")
+    sys.exit()
 
 isFirstNote = True
 interval = 0
@@ -12,7 +16,7 @@ oldOct = 0
 oldIndex = 0
 
 
-tree = ET.parse('demosong2.musicxml')
+tree = ET.parse(sys.argv[1])
 root = tree.getroot()
 
 #Necessary values for interval calculation

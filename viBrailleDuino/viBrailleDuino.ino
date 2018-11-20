@@ -88,7 +88,6 @@ int getValueFromDict(char c, t_dict *d, int dictSize) {
       val=d[i].value;
       break;
     }
-    
   }
   return (i<dictSize) ? val : -1;
 }
