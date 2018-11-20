@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 ###################################
 # MusicXML to viBraille converter #
 # by Arda Eden 2018               #
@@ -77,7 +79,7 @@ for target in root.findall('./part/measure/note'):
             idx = stepIndexes.get(noteStep)
             o = noteOct - oldOct
             interval = abs((o * 7) + (idx - oldIndex)) + 1
-            if ((interval >= 6) or ((interval in range(4,6)) and o<>0)):
+            if ((interval >= 6) or ((interval in range(4,6)) and o!=0)):
                 print('o' + str(noteOct))
                 text_file.write('o' + str(noteOct) + '\n')
             oldIndex = idx
