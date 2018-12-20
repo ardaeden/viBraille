@@ -81,6 +81,7 @@ for target in root.findall('./part/measure/note'):
         #Get accidentals if exist.
         if (target.find('accidental')) is not None:
             acc = target.find('accidental').text
+            
             if (acc=='flat-flat'):
                 for i in range(2):    
                     print('-')
