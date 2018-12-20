@@ -90,19 +90,24 @@ for target in root.findall('./part/measure/note'):
             if (acc=='flat-flat'):
                 for i in range(2):    
                     print('-')
+                    text_file.write('-')
             
             if (acc=='flat'):
                 print('-')
+                text_file.write('-')
 
             if (acc=='sharp'):
                 print('+')
+                text_file.write('+')
 
             if (acc=='double-sharp'):
                 for i in range(2):    
                     print('+')
+                    text_file.write('+')
 
             if (acc=='natural'):
                 print('n')
+                text_file.write('n')
 
 
         # Create a note code in output
