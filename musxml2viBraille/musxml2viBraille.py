@@ -37,7 +37,6 @@ noteTypes = {'whole'   :'0'     , 'half'   :'1',
              '16th'    :'4'     , '32th'   :'5',
              '64th'    :'6'     , '128th'  :'7'}
 
-noteAlts = {'-2':'0', '-1':'1', '1':'3', '2':'4'}
 
 text_file = open("output.txt","w")         
 
@@ -48,8 +47,7 @@ for target in root.findall('./part/measure/note'):
     
     noteType = noteTypes.get(target.find('type').text)
 
-    # If note is a rest, set noteStep='7' (reserved for a rest),
-    # noteAlt='n' (nil) since it is meaningless for a rest.
+    # If note is a rest, use "r" as the symbol
     if (target.find('rest') is not None):
         print('r' + noteType)
         text_file.write('r' + noteType + '\n')
@@ -85,17 +83,31 @@ for target in root.findall('./part/measure/note'):
             oldIndex = idx
             oldOct = noteOct
 
-        #If not a rest, get accidental if exists. Else pick '2' for natural
-        if (target.find('pitch/alter')) is not None:
-            noteAlt  = noteAlts.get(target.find('pitch/alter').text)
-        else:
-            noteAlt = '2'
+
+        #If not a rest, get accidentals if exists.
+        if (target.find('accidental')) is not None:
+            acc = target.find('accidental').text
+            if (acc=='flat-flat'):
+                for i in range(2):    
+                    print('-')
+            
+            if (acc=='flat'):
+                print('-')
+
+            if (acc=='sharp'):
+                print('+')
+
+            if (acc=='double-sharp'):
+                for i in range(2):    
+                    print('+')
+
+            if (acc=='natural'):
+                print('n')
 
 
         # Create a note code in output
-        print(noteStep + noteAlt + noteType)
-        text_file.write(noteStep + noteAlt + noteType + '\n')
-
+        print(noteStep + noteType)
+        text_file.write(noteStep + noteType + '\n')
 
 
     # Get the dot count and create a dot
