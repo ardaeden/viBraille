@@ -51,12 +51,11 @@ for target in root.findall('./part/measure/note'):
     if (target.find('rest') is not None):
         print('r' + noteType)
         text_file.write('r' + noteType + '\n')
-        #noteStep = 'r'
-        #noteAlt = '_'
+        
+    #if not a rest keep on ...
     else:
+        
         noteStep = noteSteps.get(target.find('pitch/step').text)
-
-        #If not a rest get octave
         noteOct = int(target.find('pitch/octave').text)
 
 
@@ -84,30 +83,30 @@ for target in root.findall('./part/measure/note'):
             oldOct = noteOct
 
 
-        #If not a rest, get accidentals if exists.
+        #Get accidentals if exists.
         if (target.find('accidental')) is not None:
             acc = target.find('accidental').text
             if (acc=='flat-flat'):
                 for i in range(2):    
                     print('-')
-                    text_file.write('-')
+                    text_file.write('-' + '\n')
             
             if (acc=='flat'):
                 print('-')
-                text_file.write('-')
+                text_file.write('-' + '\n')
 
             if (acc=='sharp'):
                 print('+')
-                text_file.write('+')
+                text_file.write('+' + '\n')
 
             if (acc=='double-sharp'):
                 for i in range(2):    
                     print('+')
-                    text_file.write('+')
+                    text_file.write('+' + '\n')
 
             if (acc=='natural'):
                 print('n')
-                text_file.write('n')
+                text_file.write('n' + '\n')
 
 
         # Create a note code in output
