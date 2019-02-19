@@ -43,9 +43,19 @@ if (text_file):
 
 for measures in root.findall('./part/measure'):
 
+    # Check for the measure attributes
+    if (measures.find('attributes/time') is not None):
+
+        tmpTimeCode = 't' + measures.find('attributes/time/beats').text + measures.find('attributes/time/beat-type').text
+        print(tmpTimeCode)
+        text_file.write(tmpTimeCode + '\n')
+
     for notes in measures.findall('note'):
         
-        noteType = noteTypes.get(notes.find('type').text)
+        if (notes.find('type') is not None):
+            noteType = noteTypes.get(notes.find('type').text)
+        else:
+            noteType = ''
 
         # If note is a rest, use "r" as the symbol
         if (notes.find('rest') is not None):
