@@ -14,73 +14,49 @@ t_dict notes[7] = { {'c', B100110},
                   };
 
 void setup() {
-  // Open serial communications and wait for port to open:
+  for (int i=4; i<10; i++) {
+    pinMode(i, OUTPUT);
+    digitalWrite(i, HIGH);
+  }
+  pinMode(2, INPUT);
+  pinMode(3, INPUT);
+  
   Serial.begin(9600);
-  pinMode(2, INPUT_PULLUP);
   
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
 
-  Serial.print("Initializing SD card...");
+  Serial.println("Initializing SD card...");
 
-  if (!SD.begin(4)) {
+  if (!SD.begin(10)) {
     Serial.println("initialization failed!");
     while (1);
   }
   Serial.println("initialization done.");
 
-  // open the file. note that only one file can be open at a time,
-  // so you have to close this one before opening another.
-  myFile = SD.open("test.txt", FILE_WRITE);
-
-  // if the file opened okay, write to it:
-//  if (myFile) {
-//    Serial.print("Writing to test.txt...");
-//    myFile.println("testing 1, 2, 3.");
-//    // close the file:
-//    myFile.close();
-//    Serial.println("done.");
-//  } else {
-//    // if the file didn't open, print an error:
-//    Serial.println("error opening test.txt");
-//  }
-
-  // re-open the file for reading:
-  myFile = SD.open("output.txt");
-//  if (myFile) {
-//    Serial.println("output.txt:");
-//
-//    // read from the file until there's nothing else in it:
-//    while (myFile.available()) {
-//      Serial.write(myFile.read());
-//    }
-//    // close the file:
-//    myFile.close();
-//  } else {
-//    // if the file didn't open, print an error:
-//    Serial.println("error opening test.txt");
-//  }
+   myFile = SD.open("output.txt");
 }
-
 void loop() {
-  while(myFile.available()) {
-    s = myFile.readStringUntil('\n');
-    switch(s[0]) {
-      case '.':
-        Serial.println("DOT");
-        updateLEDs(B001000);
-        break;
-      default:
-        Serial.println(s[0]);
-    }
-  }
-if (digitalRead(2)==LOW) Serial.println("pressed");
-else Serial.println("Not Pressed");
+//  while(myFile.available()) {
+//    s = myFile.readStringUntil('\n');
+//    switch(s[0]) {
+//      case '.':
+//        Serial.println("DOT");
+//        updateLEDs(B100010);
+//        break;
+//      default:
+//        Serial.println(s[0]);
+//    }
+//  }
+  if (digitalRead(2)) digitalWrite(4, HIGH);
+  else digitalWrite(4, LOW);
+
+    if (digitalRead(3)) digitalWrite(7, HIGH);
+  else digitalWrite(7,
+  , LOW);
 }
-
-
 int getValueFromDict(char c, t_dict *d, int dictSize) {
   int i, val;
   for (i=0; i<dictSize; i++) {
@@ -92,9 +68,8 @@ int getValueFromDict(char c, t_dict *d, int dictSize) {
   return (i<dictSize) ? val : -1;
 }
 
-
 void updateLEDs(int veri) {
-  int pins[6] = {2, 3, 5, 6, 7, 8};
+  int pins[6] = {6, 5, 4, 7, 8, 9};
   int mask[6] = {32, 16, 8, 4, 2, 1};
   for (int i=0; i<6; i++) {
     if ((veri & mask[i]) == mask[i])
