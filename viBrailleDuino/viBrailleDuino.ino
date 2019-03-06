@@ -1,6 +1,10 @@
 #include "viBrailleDuino.h"
 #include <SPI.h>
 #include <SD.h>
+#include <Debounce.h>
+
+Debounce debouncer_L = Debounce (5, SW_LEFT);
+Debounce debouncer_R = Debounce (5, SW_RIGHT);
 
 File myFile;
 String s;
@@ -14,51 +18,53 @@ t_dict notes[7] = { {'c', B100110},
                   };
 
 void setup() {
+  //Set pin modes
   for (int i=4; i<10; i++) {
     pinMode(i, OUTPUT);
     digitalWrite(i, HIGH);
   }
-  pinMode(2, INPUT);
-  pinMode(3, INPUT);
-  
+  pinMode(SW_LEFT, INPUT);
+  pinMode(SW_RIGHT, INPUT);
+
+  //Begin serial
   Serial.begin(9600);
   
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
-
   Serial.println("Initializing SD card...");
 
-  if (!SD.begin(10)) {
+  if (!SD.begin(SD_SC_PIN)) {
     Serial.println("initialization failed!");
     while (1);
   }
-  Serial.println("initialization done.");
 
+  else {
+    Serial.println("initialization done.");
+  }
    myFile = SD.open("output.txt");
 }
+
 void loop() {
-//  while(myFile.available()) {
-//    s = myFile.readStringUntil('\n');
-//    switch(s[0]) {
-//      case '.':
-//        Serial.println("DOT");
-//        updateLEDs(B100010);
-//        break;
-//      default:
-//        Serial.println(s[0]);
-//    }
-//  }
+  while(myFile.available()) {
+    debouncer_L.update();
+    debouncer_R.update();
+    
+    //s = myFile.readStringUntil('\n');
+    
+  }
   if (digitalRead(2)) digitalWrite(4, HIGH);
   else digitalWrite(4, LOW);
 
     if (digitalRead(3)) digitalWrite(7, HIGH);
-  else digitalWrite(7,
-  , LOW);
+  else digitalWrite(7 , LOW);
 }
+
+
 int getValueFromDict(char c, t_dict *d, int dictSize) {
   int i, val;
+  
   for (i=0; i<dictSize; i++) {
     if (d[i].id==c) {
       val=d[i].value;

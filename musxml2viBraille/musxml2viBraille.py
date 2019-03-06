@@ -32,8 +32,8 @@ noteSteps = {'C':'c', 'D':'d',
 #This is the dictionary for note types conversion
 noteTypes = {'whole'   :'0'     , 'half'   :'1',
              'quarter' :'2'     , 'eighth' :'3',
-             '16th'    :'4'     , '32th'   :'5',
-             '64th'    :'6'     , '128th'  :'7'}
+             '16th'    :'0'     , '32th'   :'1',
+             '64th'    :'2'     , '128th'  :'3'}
 
 text_file = open("output.txt","w")         
 
@@ -68,29 +68,6 @@ for measures in root.findall('./part/measure'):
             noteStep = noteSteps.get(notes.find('pitch/step').text)
             noteOct = int(notes.find('pitch/octave').text)
 
-
-            # !!! Note interval and octave code decision is done here !!!
-            # -----------------------------------------------------------
-            
-            # Create an octave code for the first note
-            if (isFirstNote is True):
-                oldOct = noteOct
-                oldIndex = stepIndexes.get(noteStep)
-                print('o' + str(noteOct))
-                text_file.write('o' + str(noteOct) + '\n')
-                isFirstNote = False
-
-            # Do the math and decide for octave codes :))
-            else: 
-                idx = stepIndexes.get(noteStep)
-                o = noteOct - oldOct
-                interval = abs((o * 7) + (idx - oldIndex)) + 1
-                if ((interval >= 6) or ((interval in range(4,6)) and o != 0)):
-                    print('o' + str(noteOct))
-                    text_file.write('o' + str(noteOct) + '\n')
-                oldIndex = idx
-                oldOct = noteOct
-
             #Get accidentals if exist.
             if (notes.find('accidental')) is not None:
                 acc = notes.find('accidental').text
@@ -116,6 +93,30 @@ for measures in root.findall('./part/measure'):
                 if (acc=='natural'):
                     print('n')
                     text_file.write('n' + '\n')
+
+
+            # !!! Note interval and octave code decision is done here !!!
+            # -----------------------------------------------------------
+            
+            # Create an octave code for the first note
+            if (isFirstNote is True):
+                oldOct = noteOct
+                oldIndex = stepIndexes.get(noteStep)
+                print('o' + str(noteOct))
+                text_file.write('o' + str(noteOct) + '\n')
+                isFirstNote = False
+
+            # Do the math and decide for octave codes :))
+            else: 
+                idx = stepIndexes.get(noteStep)
+                o = noteOct - oldOct
+                interval = abs((o * 7) + (idx - oldIndex)) + 1
+                if ((interval >= 6) or ((interval in range(4,6)) and o != 0)):
+                    print('o' + str(noteOct))
+                    text_file.write('o' + str(noteOct) + '\n')
+                oldIndex = idx
+                oldOct = noteOct
+
 
             # Create a note code in output
             print(noteStep + noteType)
