@@ -47,8 +47,8 @@ for measures in root.findall('./part/measure'):
     if (measures.find('attributes/time') is not None):
 
         tmpTimeCode = 't' + measures.find('attributes/time/beats').text + measures.find('attributes/time/beat-type').text
-        print(tmpTimeCode)
-        text_file.write(tmpTimeCode + '\n')
+        print(tmpTimeCode + '_')
+        text_file.write(tmpTimeCode + '_')
 
     for notes in measures.findall('note'):
         
@@ -59,8 +59,8 @@ for measures in root.findall('./part/measure'):
 
         # If note is a rest, use "r" as the symbol
         if (notes.find('rest') is not None):
-            print('r' + noteType)
-            text_file.write('r' + noteType + '\n')
+            print('r' + noteType + '__')
+            text_file.write('r' + noteType + '__')
             
         #if not a rest keep on ...
         else:
@@ -74,25 +74,25 @@ for measures in root.findall('./part/measure'):
                 
                 if (acc=='flat-flat'):
                     for i in range(2):    
-                        print('-')
-                        text_file.write('-' + '\n')
+                        print('-___')
+                        text_file.write('-' + '___')
                 
                 if (acc=='flat'):
-                    print('-')
-                    text_file.write('-' + '\n')
+                    print('-___')
+                    text_file.write('-' + '___')
 
                 if (acc=='sharp'):
-                    print('+')
-                    text_file.write('+' + '\n')
+                    print('+___')
+                    text_file.write('+' + '___')
 
                 if (acc=='double-sharp'):
                     for i in range(2):    
-                        print('+')
-                        text_file.write('+' + '\n')
+                        print('+___')
+                        text_file.write('+' + '___')
 
                 if (acc=='natural'):
-                    print('n')
-                    text_file.write('n' + '\n')
+                    print('n___')
+                    text_file.write('n' + '___')
 
 
             # !!! Note interval and octave code decision is done here !!!
@@ -102,8 +102,8 @@ for measures in root.findall('./part/measure'):
             if (isFirstNote is True):
                 oldOct = noteOct
                 oldIndex = stepIndexes.get(noteStep)
-                print('o' + str(noteOct))
-                text_file.write('o' + str(noteOct) + '\n')
+                print('o' + str(noteOct) + '__')
+                text_file.write('o' + str(noteOct) + '__')
                 isFirstNote = False
 
             # Do the math and decide for octave codes :))
@@ -112,21 +112,21 @@ for measures in root.findall('./part/measure'):
                 o = noteOct - oldOct
                 interval = abs((o * 7) + (idx - oldIndex)) + 1
                 if ((interval >= 6) or ((interval in range(4,6)) and o != 0)):
-                    print('o' + str(noteOct))
-                    text_file.write('o' + str(noteOct) + '\n')
+                    print('o' + str(noteOct) + '__')
+                    text_file.write('o' + str(noteOct) + '__')
                 oldIndex = idx
                 oldOct = noteOct
 
 
             # Create a note code in output
-            print(noteStep + noteType)
-            text_file.write(noteStep + noteType + '\n')
+            print(noteStep + noteType + '__')
+            text_file.write(noteStep + noteType + '__')
 
         # Get the dot count and create a dot
         # code in output for each <dot/> tag in note
         notedotcount = len(notes.findall('dot'))
         for i in range(notedotcount):
-            print('.')
-            text_file.write('.' + '\n')
+            print('.' + '___')
+            text_file.write('.' + '___')
 
 text_file.close()

@@ -34,14 +34,14 @@ class Button {
 class VBD_Handler {
   public:
     VBD_Handler(void);
-    void Update(int buttonID);
+    void Navigate(int buttonID);
+    void Parse(char *data);
     void SetFile(File file);
     unsigned long filePos;
   private:
     File _file;
     int _buttonID;
-    unsigned long _filePos;
-    String _tmp;
-    int _readLen;
+    long _filePos;
+    char _dataRead[4];
 };
 #endif

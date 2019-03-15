@@ -30,6 +30,8 @@ void setup() {
 
   if (file = SD.open("output.txt")) {
     Serial.println("File successfully opened ...");
+    Serial.print("File length: ");
+    Serial.println(file.size());
   }
   
   else {
@@ -53,7 +55,7 @@ void loop() {
 void checkButtons() {
   for (int i=0; i<NUM_BTNS; i++) {
     if (btns[i]->Clicked()) {
-      handler.Update(btns[i]->id);  
+      handler.Navigate(btns[i]->id);  
     }
   }
 }

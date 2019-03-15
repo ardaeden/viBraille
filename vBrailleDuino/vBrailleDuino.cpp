@@ -1,15 +1,42 @@
 #include "vBrailleDuino.h"
 
 
-t_dict notenames[7] = { {'c', B100110},
-                        {'d', B100010},
-                        {'e', B110100},
-                        {'f', B110110},
-                        {'g', B110010},
+t_dict noteNames[7] = { {'c', B001110},
+                        {'d', B001010},
+                        {'e', B011100},
+                        {'f', B011110},
+                        {'g', B011010},
                         {'a', B010100},
                         {'b', B010110}
                       };
 
+t_dict noteValues[4]   =  { {'0', B100001},
+                            {'1', B100000},
+                            {'2', B000001},
+                            {'3', B000000}
+                          };
+
+t_dict octaveNumbers[7]  =   {  {'1', B000100},
+                                {'2', B000110},
+                                {'3', B000111},
+                                {'4', B000010},
+                                {'5', B000101},
+                                {'6', B000011},
+                                {'7', B000001}
+                             };
+
+t_dict rests[4] = { {'0', B101100},
+                    {'1', B101001},
+                    {'2', B111001},
+                    {'3', B101101}
+                  };
+
+t_dict accidentalsAndDot[4] =  {  {'n', B001001},
+                                  {'+', B001101},
+                                  {'-', B011001},
+                                  {'.', B100000}
+                               };
+                      
                       
 int Button::nextID = 0;
                   
@@ -56,44 +83,71 @@ boolean Button::Clicked(){
 /***********************************/
 
 VBD_Handler::VBD_Handler() {
-//_filePos = -2;
+_filePos = 0;
 }
 
-void VBD_Handler::Update(int buttonID) {
+void VBD_Handler::Navigate(int buttonID) {
 
   _buttonID = buttonID;
   switch(_buttonID) {
     
-    case 1:                       //Left button clicked 
-      _filePos=_filePos-_readLen-1;
-      Serial.println(_filePos);
-      _file.seek(_filePos);
-      _tmp = _file.readStringUntil('\n');
-      Serial.print(_tmp);
-      Serial.print("  ");
-      Serial.print(_tmp.length());
-      Serial.print("  ");
-      //_filePos = _file.position();
-      Serial.println(_filePos);
-
-      //updateLEDs(getValueFromDict(tmp, notenames, 7));
+    case 1:                       //Left button clicked
+      _filePos = _filePos - 4;
+      _filePos = _filePos < 0 ? 0 : _filePos;
+      for (int i=0; i<4; i++) {
+        _file.seek(_filePos + i);
+        _dataRead[i] = _file.peek();
+        Serial.print(_dataRead[i]);
+      }
+      Serial.println();
+      Parse(_dataRead);
       break;
       
     case 2:                       //Right button clicked
-
-      _tmp = _file.readStringUntil('\n');
-      Serial.print(_tmp);
-      Serial.print("  ");
-      Serial.print(_tmp.length());
-      Serial.print("  ");
-      _filePos = _file.position();
-      _readLen = _tmp.length();
-      Serial.println(_filePos);
-      
-      //updateLEDs(getValueFromDict(tmp, notenames, 7));
+      for (int i=0; i<4; i++) {
+        _file.seek(_filePos + i);
+        _dataRead[i] = _file.peek();
+        Serial.print(_dataRead[i]);
+      }
+      Serial.println();
+      _filePos = (_filePos == _file.size() - 4) ? _filePos : _filePos + 4;
+      Parse(_dataRead);
       break;
   }
 }
+
+void VBD_Handler::Parse(char *data) {
+  uint8_t ledState=0;
+  switch(data[0]) {
+    case 'c':
+    case 'd':
+    case 'e':
+    case 'f':
+    case 'g':
+    case 'a':
+    case 'b':
+      ledState =    getValueFromDict(data[0], noteNames, 7)
+                  + getValueFromDict(data[1], noteValues, 4);
+      break;
+
+    case 'r':
+      ledState = getValueFromDict(data[1], rests, 4);
+      break;
+      
+    case 'o':
+      ledState = getValueFromDict(data[1], octaveNumbers, 7);
+      break;
+
+    case 'n':
+    case '+':
+    case '-':
+    case '.':
+      ledState = getValueFromDict(data[0], accidentalsAndDot, 4);
+      break;
+  }
+  updateLEDs(ledState);
+}
+
 
 void VBD_Handler::SetFile(File file) {
   _file = file;
@@ -116,13 +170,13 @@ int getValueFromDict(char c, t_dict *d, int dictSize) {
 
 //UPDATE LEDs
 void updateLEDs(int veri) {
-  int pins[6] = {4, 5, 6, 7, 8, 9};
+  int pins[6] = {6, 5, 4, 7, 8, 9};
   int mask[6] = {32, 16, 8, 4, 2, 1};
   for (int i=0; i<6; i++) {
     if ((veri & mask[i]) == mask[i]) {
       digitalWrite(pins[i], HIGH);
-      delay(500);
-      digitalWrite(pins[i], LOW);
+//      delay(500);
+//      digitalWrite(pins[i], LOW);
     }
     else
       digitalWrite(pins[i], LOW);
