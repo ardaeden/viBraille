@@ -169,14 +169,14 @@ int getValueFromDict(char c, t_dict *d, int dictSize) {
 
 
 //UPDATE LEDs
-void updateLEDs(int veri) {
+void updateLEDs(int cell) {
   int pins[6] = {6, 5, 4, 7, 8, 9};
   int mask[6] = {32, 16, 8, 4, 2, 1};
   for (int i=0; i<6; i++) {
-    if ((veri & mask[i]) == mask[i]) {
+    if ((cell & mask[i]) == mask[i]) {
       digitalWrite(pins[i], HIGH);
-//      delay(500);
-//      digitalWrite(pins[i], LOW);
+      delay(MOTOR_INTERVAL_DELAY_TIME);
+      digitalWrite(pins[i], LOW);
     }
     else
       digitalWrite(pins[i], LOW);

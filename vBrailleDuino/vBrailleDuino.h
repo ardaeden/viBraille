@@ -5,6 +5,7 @@
 #include <SD.h>
 
 #define SD_SC_PIN   10
+#define MOTOR_INTERVAL_DELAY_TIME 200
 
 typedef struct dict {
   char id;
