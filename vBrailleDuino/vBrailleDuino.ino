@@ -15,7 +15,9 @@ VBD_Handler handler;
 File file;
 
 void setup() {
-
+  for (int i=4; i<10; i++) {
+    pinMode(i, OUTPUT);
+  }
   Serial.begin(9600);
   Serial.println("Initializing SD card ...");
   
