@@ -171,7 +171,7 @@ int getValueFromDict(char c, t_dict *d, int dictSize) {
 //UPDATE LEDs
 void updateLEDs(int cell) {
   //Serial.println("TEsttt");
-  int pins[6] = {4, 5, 6, 7, 8, 9};
+  int pins[6] = {6, 5, 4, 7, 8, 9};
   int mask[6] = {32, 16, 8, 4, 2, 1};
   for (int i=0; i<6; i++) {
     if ((cell & mask[i]) == mask[i]) {
