@@ -129,4 +129,6 @@ for measures in root.findall('./part/measure'):
             print('.' + '___')
             text_file.write('.' + '___')
 
+    print('|' + '___')
+    text_file.write('|' + '___')
 text_file.close()

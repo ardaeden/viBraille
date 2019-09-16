@@ -1,44 +1,48 @@
 #include "vBrailleDuino.h"
 
 
-t_dict noteNames[7] = { {'c', B001110},
-                        {'d', B001010},
-                        {'e', B011100},
-                        {'f', B011110},
-                        {'g', B011010},
-                        {'a', B010100},
-                        {'b', B010110}
-                      };
+t_dict noteNames[7] =         { {'c', B001110},
+                                {'d', B001010},
+                                {'e', B011100},
+                                {'f', B011110},
+                                {'g', B011010},
+                                {'a', B010100},
+                                {'b', B010110}
+                              };
 
-t_dict noteValues[4]   =  { {'0', B100001},
-                            {'1', B100000},
-                            {'2', B000001},
-                            {'3', B000000}
-                          };
+t_dict noteValues[4]    =    { {'0', B100001},
+                               {'1', B100000},
+                               {'2', B000001},
+                               {'3', B000000}
+                             };
 
-t_dict octaveNumbers[7]  =   {  {'1', B000100},
+t_dict octaveNumbers[7] =    { {'1', B000100},
                                 {'2', B000110},
                                 {'3', B000111},
                                 {'4', B000010},
                                 {'5', B000101},
                                 {'6', B000011},
                                 {'7', B000001}
-                             };
+                              };
 
-t_dict rests[4] = { {'0', B101100},
-                    {'1', B101001},
-                    {'2', B111001},
-                    {'3', B101101}
-                  };
+t_dict rests[4] =             { {'0', B101100},
+                                {'1', B101001},
+                                {'2', B111001},
+                                {'3', B101101}
+                              };
 
-t_dict accidentalsAndDot[4] =  {  {'n', B001001},
-                                  {'+', B001101},
-                                  {'-', B011001},
-                                  {'.', B100000}
-                               };
+t_dict accidentalsAndDot[4] = { {'n', B001001},
+                                {'+', B001101},
+                                {'-', B011001},
+                                {'.', B100000}
+                              };
+
+t_dict measures[1] =          { {'|', B111111}};
                       
                       
 int Button::nextID = 0;
+
+int uType=0;
                   
 Button::Button(uint8_t buttonPin, long debounceDelay) {
   id = ++nextID;
@@ -46,7 +50,6 @@ Button::Button(uint8_t buttonPin, long debounceDelay) {
   _currState = 0;
   _preState = 0;
   _reading = 0;
-  _prepreState = 0;
   _lastDebounceTime = 0;
   _debounceDelay = debounceDelay;
   pinMode(_pin, INPUT);
@@ -128,14 +131,17 @@ void VBD_Handler::Parse(char *data) {
     case 'b':
       ledState =    getValueFromDict(data[0], noteNames, 7)
                   + getValueFromDict(data[1], noteValues, 4);
+      uType = 0;
       break;
 
     case 'r':
       ledState = getValueFromDict(data[1], rests, 4);
+      uType = 0;
       break;
       
     case 'o':
       ledState = getValueFromDict(data[1], octaveNumbers, 7);
+      uType = 0;
       break;
 
     case 'n':
@@ -143,9 +149,16 @@ void VBD_Handler::Parse(char *data) {
     case '-':
     case '.':
       ledState = getValueFromDict(data[0], accidentalsAndDot, 4);
+      uType = 0;
       break;
+
+    case '|':
+      ledState = getValueFromDict(data[0], measures, 1);
+      uType = 1;
+      break;
+    
   }
-  updateLEDs(ledState);
+  updateLEDs(ledState, MOTOR_INTERVAL_DELAY_TIME, uType);
 }
 
 
@@ -169,18 +182,38 @@ int getValueFromDict(char c, t_dict *d, int dictSize) {
 
 
 //UPDATE LEDs
-void updateLEDs(int cell) {
-  //Serial.println("TEsttt");
-  int pins[6] = {6, 5, 4, 7, 8, 9};
-  int mask[6] = {32, 16, 8, 4, 2, 1};
-  for (int i=0; i<6; i++) {
-    if ((cell & mask[i]) == mask[i]) {
-      digitalWrite(pins[i], HIGH);
-      Serial.println(pins[i]-3);
-      delay(500);
-      digitalWrite(pins[i], LOW);
-    }
-    else
-      digitalWrite(pins[i], LOW);
+void updateLEDs(int cell, int delayTime, int updateType) {
+  uint8_t idx[6]  = {2, 1, 0, 3, 4, 5};
+  uint8_t pins[6] = {6, 5, 4, 7, 8, 9};
+  uint8_t mask[6] = {32, 16, 8, 4, 2, 1};
+  
+  switch (updateType) {
+
+  case 0:
+      for (int i=0; i<6; i++) {
+        if ((cell & mask[idx[i]]) == mask[idx[i]]) {
+          digitalWrite(pins[idx[i]], HIGH);
+          Serial.println(pins[idx[i]]-3);
+          delay(delayTime);
+          digitalWrite(pins[idx[i]], LOW);
+        }
+        else
+          digitalWrite(pins[idx[i]], LOW);
+      }
+      break;
+      
+   case 1:
+      for (int i=0; i<6; i++) {
+        if ((cell & mask[i]) == mask[i]) {
+          digitalWrite(pins[i], HIGH);
+          Serial.println(pins[i]-3);
+        }
+        else
+          digitalWrite(pins[i], LOW);
+      }
+      delay (300);
+      for (int i=0; i<6; i++) {
+        digitalWrite(pins[i], LOW);
+      }
   }
 }

@@ -5,7 +5,7 @@
 #include <SD.h>
 
 #define SD_SC_PIN   10
-#define MOTOR_INTERVAL_DELAY_TIME 500
+#define MOTOR_INTERVAL_DELAY_TIME 400
 
 typedef struct dict {
   char id;
@@ -13,7 +13,7 @@ typedef struct dict {
 } t_dict;
 
 int getValueFromDict(char c, t_dict *d, int dictSize);
-void updateLEDs(int veri);
+void updateLEDs(int veri, int delayTime, int updateType);
 
 class Button {
   protected:
@@ -27,7 +27,6 @@ class Button {
     int _currState;            
     int _preState;   
     int _reading;
-    int _prepreState;
     long _lastDebounceTime;  
     long _debounceDelay; 
 };
