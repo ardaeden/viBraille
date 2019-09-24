@@ -1,7 +1,7 @@
 #include "vBrailleDuino.h"
 
 
-t_dict noteNames[7] =         { {'c', B001110},
+t_dict noteNames[7] =         { {'c', B001110}, //Format 321456
                                 {'d', B001010},
                                 {'e', B011100},
                                 {'f', B011110},
@@ -17,13 +17,13 @@ t_dict noteValues[4]    =    { {'0', B100001},
                              };
 
 t_dict octaveNumbers[7] =    { {'1', B000100},
-                                {'2', B000110},
-                                {'3', B000111},
-                                {'4', B000010},
-                                {'5', B000101},
-                                {'6', B000011},
-                                {'7', B000001}
-                              };
+                               {'2', B000110},
+                               {'3', B000111},
+                               {'4', B000010},
+                               {'5', B000101},
+                               {'6', B000011},
+                               {'7', B000001}
+                             };
 
 t_dict rests[4] =             { {'0', B101100},
                                 {'1', B101001},
@@ -36,10 +36,38 @@ t_dict accidentalsAndDot[4] = { {'n', B001001},
                                 {'-', B011001},
                                 {'.', B100000}
                               };
+t_dict misc[2]      =          { {'|', B111111},
+                                 {'#', B100111}
+                               };
 
-t_dict measures[1] =          { {'|', B111111}};
-                      
-                      
+t_dict numbersUp[10]    =   { {'0', B010110},
+                          {'1', B001000},
+                          {'2', B011000},
+                          {'3', B001100},
+                          {'4', B001110},
+                          {'5', B001010},
+                          {'6', B011100},
+                          {'7', B011110},
+                          {'8', B011010},
+                          {'9', B010100} 
+                        };
+
+t_dict numbersDown[10]    =   { {'0', B100011},
+                                {'1', B010000},
+                                {'2', B110000},
+                                {'3', B010010},
+                                {'4', B010011},
+                                {'5', B010001},
+                                {'6', B110010},
+                                {'7', B110011},
+                                {'8', B110001},
+                                {'9', B100010} 
+                              };
+
+t_dict ties[2] = {{'1', B000100},
+                  {'2', B001100}
+                 };
+                 
 int Button::nextID = 0;
 
 int uType=0;
@@ -152,9 +180,29 @@ void VBD_Handler::Parse(char *data) {
       uType = 0;
       break;
 
+    case '>':
+      ledState = getValueFromDict(data[1], numbersUp, 10);
+      uType = 0;
+      break;
+
+    case '<':
+      ledState = getValueFromDict(data[1], numbersDown, 10);
+      uType = 0;
+      break;
+
     case '|':
-      ledState = getValueFromDict(data[0], measures, 1);
+      ledState = getValueFromDict(data[0], misc, 2);
       uType = 1;
+      break;
+      
+    case '#':
+      ledState = getValueFromDict(data[0], misc, 2);
+      uType = 0;
+      break;
+      
+    case '^':
+      ledState = getValueFromDict(data[1], ties, 2);
+      uType = 0;
       break;
     
   }

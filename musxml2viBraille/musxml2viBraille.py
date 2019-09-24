@@ -42,14 +42,37 @@ if (text_file):
 
 
 for measures in root.findall('./part/measure'):
+    
+    #Check for the Key of music
+    if(measures.find('attributes/key') is not None):
+        tmpKeyNum = int(measures.find('attributes/key/fifths').text)
+        if (tmpKeyNum != 0):
+            if (tmpKeyNum < 0):
+                tmpAccType = '-'
+            elif (tmpKeyNum > 0):
+                tmpAccType = '+'
+            print('#___')
+            text_file.write('#___')
+            print('>' + str(abs(tmpKeyNum)) + '__')
+            text_file.write('>' + str(abs(tmpKeyNum)) + '__')
+            print(tmpAccType + '___')
+            text_file.write(tmpAccType + '___')
 
     # Check for the measure attributes
     if (measures.find('attributes/time') is not None):
 
-        tmpTimeCode = 't' + measures.find('attributes/time/beats').text + measures.find('attributes/time/beat-type').text
-        print(tmpTimeCode + '_')
-        text_file.write(tmpTimeCode + '_')
-
+        tmpBeats = measures.find('attributes/time/beats').text
+        tmpBeatType = measures.find('attributes/time/beat-type').text
+        
+        print('#___')
+        text_file.write('#___')
+        for i in range(len(tmpBeats)):
+            print('>' + tmpBeats[i] + '__')
+            text_file.write('>' + tmpBeats[i] + '__')
+        for i in range(len(tmpBeatType)):
+            print('<' + tmpBeatType[i] + '__')
+            text_file.write('<' + tmpBeatType[i] + '__')
+        
     for notes in measures.findall('note'):
         
         if (notes.find('type') is not None):
@@ -129,6 +152,13 @@ for measures in root.findall('./part/measure'):
             print('.' + '___')
             text_file.write('.' + '___')
 
+        if (notes.find('tie') is not None):
+            myTie = notes.find('tie')
+            if(myTie.get('type') == 'start'):
+                print('^1__')
+                text_file.write('^1__')
+                print('^2' + '__')
+                text_file.write('^2__')
     print('|' + '___')
     text_file.write('|' + '___')
 text_file.close()
