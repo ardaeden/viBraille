@@ -47,11 +47,11 @@ void setup() {
     Serial.println("File could not open ...");
   }
 
-  handler.SetFile(file);
+  handler.SetFile(file); //Bu if clause içinde olmalı sanki
 }
 
 void loop() {
-  readSerialAndParse();
+  readSerialAndParseCommand();
   switch(mode) { 
     case 0:
       break;
@@ -69,10 +69,10 @@ void checkButtons() {
   }
 }
 
-void parseCommand(String com) {
+void parseCommand(String cmd) {
   String part1, part2;
-  part1 = com.substring(0, com.indexOf(" "));
-  part2 = com.substring(com.indexOf(" ")+1);
+  part1 = cmd.substring(0, cmd.indexOf(" "));
+  part2 = cmd.substring(cmd.indexOf(" ")+1);
         
   if(part1.equalsIgnoreCase("delay")) {
     int data = part2.toInt();
@@ -96,7 +96,7 @@ void parseCommand(String com) {
   }
 }
 
-void readSerialAndParse() {
+void readSerialAndParseCommand() {
 if(Serial.available()) {
     char c = Serial.read();
 
