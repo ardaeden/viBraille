@@ -4,7 +4,9 @@
 
 #define NUM_BTNS 2
 
+int intervalDelayTime = 1000;
 uint8_t mode = 1; //mode is 1 for reading mode, 0 for file mode
+String command;
 
 Button btn1(2, 10);
 Button btn2(3, 10);
@@ -18,7 +20,7 @@ void setup() {
   for (int i=4; i<10; i++) {
     pinMode(i, OUTPUT);
   }
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.println("Initializing SD card ...");
   
   if (!SD.begin(SD_SC_PIN)) {
@@ -32,8 +34,13 @@ void setup() {
 
   if (file = SD.open("output.txt")) {
     Serial.println("File successfully opened ...");
+    
+    handler.SetFileSize(file.size());
+    unsigned long fs = handler.GetFileSize();
     Serial.print("File length: ");
-    Serial.println(file.size());
+    Serial.println(fs);
+    Serial.print("Number of cells: ");
+    Serial.println(fs/4);
   }
   
   else {
@@ -44,7 +51,7 @@ void setup() {
 }
 
 void loop() {
-
+  readSerialAndParse();
   switch(mode) { 
     case 0:
       break;
@@ -60,4 +67,45 @@ void checkButtons() {
       handler.Navigate(btns[i]->id);  
     }
   }
+}
+
+void parseCommand(String com) {
+  String part1, part2;
+  part1 = com.substring(0, com.indexOf(" "));
+  part2 = com.substring(com.indexOf(" ")+1);
+        
+  if(part1.equalsIgnoreCase("delay")) {
+    int data = part2.toInt();
+    handler.SetDelayTime(data);
+    Serial.print("Delay time set to: ");
+    Serial.println(data);
+  }
+  else if(part1.equalsIgnoreCase("goto")) {
+    int data = part2.toInt();
+    if (data<1 || data>(handler.GetFileSize()/4)) {
+      Serial.println("Out of file size...");
+    }
+    else {
+      handler.SetFilePos((data-1)*4); 
+      Serial.print("Cell position set to: ");
+      Serial.println(data);
+    } 
+  }
+  else {
+    Serial.println("Command not identified...");
+  }
+}
+
+void readSerialAndParse() {
+if(Serial.available()) {
+    char c = Serial.read();
+
+    if(c=='\n') {
+      parseCommand(command);
+      command = "";
+    }
+    else {
+      command += c;
+    }
+  }  
 }

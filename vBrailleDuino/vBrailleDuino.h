@@ -5,7 +5,6 @@
 #include <SD.h>
 
 #define SD_SC_PIN   10
-#define MOTOR_INTERVAL_DELAY_TIME 200
 
 typedef struct dict {
   char id;
@@ -37,11 +36,18 @@ class VBD_Handler {
     void Navigate(int buttonID);
     void Parse(char *data);
     void SetFile(File file);
+    void SetDelayTime(int delayTime);
+    void SetFilePos(int filePos);
+    void SetFileSize(unsigned long fileSize);
+    unsigned long GetFileSize();
     unsigned long filePos;
   private:
     File _file;
     int _buttonID;
     long _filePos;
     char _dataRead[4];
+    int _delayTime;
+    unsigned long _fileSize;
+    int _cellNo;
 };
 #endif

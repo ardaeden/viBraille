@@ -115,6 +115,7 @@ boolean Button::Clicked(){
 
 VBD_Handler::VBD_Handler() {
 _filePos = 0;
+_delayTime = 500;
 }
 
 void VBD_Handler::Navigate(int buttonID) {
@@ -125,6 +126,10 @@ void VBD_Handler::Navigate(int buttonID) {
     case 1:                       //Left button clicked
       _filePos = _filePos - 4;
       _filePos = _filePos < 0 ? 0 : _filePos;
+      _cellNo = (_filePos/4)+1;
+      Serial.print("CELL: ");
+      Serial.println(_cellNo);
+      Serial.println("-------------------");
       for (int i=0; i<4; i++) {
         _file.seek(_filePos + i);
         _dataRead[i] = _file.peek();
@@ -135,13 +140,17 @@ void VBD_Handler::Navigate(int buttonID) {
       break;
       
     case 2:                       //Right button clicked
+      _cellNo = (_filePos/4)+1;
+      Serial.print("CELL: ");
+      Serial.println(_cellNo);
+      Serial.println("-------------------");
       for (int i=0; i<4; i++) {
         _file.seek(_filePos + i);
         _dataRead[i] = _file.peek();
         Serial.print(_dataRead[i]);
       }
       Serial.println();
-      _filePos = (_filePos == _file.size() - 4) ? _filePos : _filePos + 4;
+      _filePos = (_filePos == _fileSize - 4) ? _filePos : _filePos + 4;
       Parse(_dataRead);
       break;
   }
@@ -206,12 +215,28 @@ void VBD_Handler::Parse(char *data) {
       break;
     
   }
-  updateLEDs(ledState, MOTOR_INTERVAL_DELAY_TIME, uType);
+  updateLEDs(ledState, _delayTime, uType);
 }
 
 
 void VBD_Handler::SetFile(File file) {
   _file = file;
+}
+
+void VBD_Handler::SetDelayTime(int delayTime) {
+  _delayTime = delayTime;
+}
+
+void VBD_Handler::SetFilePos(int filePos) {
+  _filePos = filePos;
+}
+
+void VBD_Handler::SetFileSize(unsigned long fileSize) {
+  _fileSize = fileSize;
+}
+
+unsigned long VBD_Handler::GetFileSize() {
+  return _fileSize;
 }
 
 
