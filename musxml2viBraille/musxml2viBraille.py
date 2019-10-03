@@ -51,12 +51,19 @@ for measures in root.findall('./part/measure'):
                 tmpAccType = '-'
             elif (tmpKeyNum > 0):
                 tmpAccType = '+'
-            print('#___')
-            text_file.write('#___')
-            print('>' + str(abs(tmpKeyNum)) + '__')
-            text_file.write('>' + str(abs(tmpKeyNum)) + '__')
-            print(tmpAccType + '___')
-            text_file.write(tmpAccType + '___')
+
+            if (abs(tmpKeyNum)<4):
+                for i in range(abs(tmpKeyNum)):
+                    print(tmpAccType + '___')
+                    text_file.write(tmpAccType + '___')
+            else:
+                
+                print('#___')
+                text_file.write('#___')
+                print('>' + str(abs(tmpKeyNum)) + '__')
+                text_file.write('>' + str(abs(tmpKeyNum)) + '__')
+                print(tmpAccType + '___')
+                text_file.write(tmpAccType + '___')
 
     # Check for the measure attributes
     if (measures.find('attributes/time') is not None):
