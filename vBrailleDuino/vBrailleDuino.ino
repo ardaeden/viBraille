@@ -1,6 +1,7 @@
 #include <SPI.h>
 #include <SD.h>
 #include "vBrailleDuino.h"
+#include "OneButton.h"
 
 #define NUM_BTNS 2
 
