@@ -83,11 +83,13 @@ void btn2Click() {
 }
 
 void btn1DoubleClick() {
+  delay(400);
   handler.SetFilePos(0);
   Serial.println("Set to beginning of file ...");
 }
 
 void btn2DoubleClick() {
+  delay(400);
   handler.SetFilePos(handler.GetFilePos()-4);
   handler.Navigate(2);
 }
