@@ -94,7 +94,10 @@ void VBD_Handler::Navigate(int buttonID) {
       _filePos = _filePos < 0 ? 0 : _filePos;
       _cellNo = (_filePos/4)+1;
       Serial.print("CELL: ");
-      Serial.println(_cellNo);
+      Serial.print(_cellNo);
+      Serial.print("   @");
+      Serial.print(_delayTime);
+      Serial.println("ms");
       Serial.println("-------------------");
       for (int i=0; i<4; i++) {
         _file.seek(_filePos + i);
@@ -110,7 +113,10 @@ void VBD_Handler::Navigate(int buttonID) {
       if (_route==0) _filePos = _filePos + 4; // if previous route was left jump next cell
       _cellNo = (_filePos/4)+1;
       Serial.print("CELL: ");
-      Serial.println(_cellNo);
+      Serial.print(_cellNo);
+      Serial.print("   @");
+      Serial.print(_delayTime);
+      Serial.println("ms");
       Serial.println("-------------------");
       for (int i=0; i<4; i++) {
         _file.seek(_filePos + i);
