@@ -1,22 +1,26 @@
 #include <SPI.h>
 #include <SD.h>
 #include "vBrailleDuino.h"
-
-#define NUM_BTNS 2
+#include "OneButton.h"
 
 int intervalDelayTime = 1000;
 uint8_t mode = 1; //mode is 1 for reading mode, 0 for file mode
 String command;
 
-Button btn1(2, 10);
-Button btn2(3, 10);
-Button *btns[] {&btn1, &btn2};
+OneButton button1(2, false);
+OneButton button2(3, false);
+
+
 
 VBD_Handler handler;
 
 File file;
 
 void setup() {
+  button1.attachClick(btn1Click);
+  button1.attachDoubleClick(btn1DoubleClick);
+  button2.attachClick(btn2Click);
+  button2.attachDoubleClick(btn2DoubleClick);
   for (int i=4; i<10; i++) {
     pinMode(i, OUTPUT);
   }
@@ -66,11 +70,26 @@ void loop() {
 }
 
 void checkButtons() {
-  for (int i=0; i<NUM_BTNS; i++) {
-    if (btns[i]->Clicked()) {
-      handler.Navigate(btns[i]->id);  
-    }
-  }
+  button1.tick();
+  button2.tick();
+}
+
+void btn1Click() {
+  handler.Navigate(1); // 1 for reverse
+}
+
+void btn2Click() {
+  handler.Navigate(2); // 2 for forward
+}
+
+void btn1DoubleClick() {
+  handler.SetFilePos(0);
+  Serial.println("Set to beginning of file ...");
+}
+
+void btn2DoubleClick() {
+  handler.SetFilePos(handler.GetFilePos()-4);
+  handler.Navigate(2);
 }
 
 void parseCommand(String cmd) {

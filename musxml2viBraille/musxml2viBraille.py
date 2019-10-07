@@ -8,7 +8,7 @@
 import sys
 import xml.etree.ElementTree as ET
 
-if (len(sys.argv)<2):
+if (len(sys.argv)<3):
     print("Not enough arguments...")
     sys.exit()
 
@@ -35,7 +35,7 @@ noteTypes = {'whole'   :'0'     , 'half'   :'1',
              '16th'    :'0'     , '32th'   :'1',
              '64th'    :'2'     , '128th'  :'3'}
 
-text_file = open("output.txt","w")         
+text_file = open(sys.argv[2],"w")         
 
 if (text_file):
     print('File opened without any problem ...\n')

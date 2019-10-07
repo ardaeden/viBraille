@@ -69,46 +69,9 @@ t_dict ties[2]                  = { {'1', B000100},
                                     {'2', B001100}
                                   };
                  
-int Button::nextID = 0;
 
 int uType=0;
                   
-Button::Button(uint8_t buttonPin, long debounceDelay) {
-  id = ++nextID;
-  _pin = buttonPin;
-  _currState = 0;
-  _preState = 0;
-  _reading = 0;
-  _lastDebounceTime = 0;
-  _debounceDelay = debounceDelay;
-  pinMode(_pin, INPUT);
-}
-
-boolean Button::Clicked(){
-  _reading = digitalRead(_pin);
-
-  if (_reading != _currState) {
-    _lastDebounceTime = millis();
-    _currState = _reading;
-  }
-   
-  if (_reading != _preState) {
-    if ( millis() - _lastDebounceTime > _debounceDelay ){
-      if (_reading == HIGH){ 
-        if (_preState == LOW){
-          _preState = _reading;
-          return true;  
-        }
-      }
-      else  {
-        _preState = _reading;
-      }
-    }
-  }
-  return false;
-}
-
-
 
 /***********************************/
 /*THIS IS THE HANDLER CLASS FOR VBD*/
@@ -117,6 +80,7 @@ boolean Button::Clicked(){
 VBD_Handler::VBD_Handler() {
 _filePos = 0;
 _delayTime = 500;
+_route = 1;
 }
 
 void VBD_Handler::Navigate(int buttonID) {
@@ -124,8 +88,9 @@ void VBD_Handler::Navigate(int buttonID) {
   _buttonID = buttonID;
   switch(_buttonID) {
     
-    case 1:                       //Left button clicked
-      _filePos = _filePos - 4;
+    case 1:                        //Left button clicked
+      _cellStep = (_route==1) ? 8 : 4; // if previous route was right jump 2 cells back
+      _filePos = _filePos - _cellStep;
       _filePos = _filePos < 0 ? 0 : _filePos;
       _cellNo = (_filePos/4)+1;
       Serial.print("CELL: ");
@@ -138,9 +103,11 @@ void VBD_Handler::Navigate(int buttonID) {
       }
       Serial.println();
       Parse(_dataRead);
+      _route = 0;
       break;
       
     case 2:                       //Right button clicked
+      if (_route==0) _filePos = _filePos + 4; // if previous route was left jump next cell
       _cellNo = (_filePos/4)+1;
       Serial.print("CELL: ");
       Serial.println(_cellNo);
@@ -151,8 +118,9 @@ void VBD_Handler::Navigate(int buttonID) {
         Serial.print(_dataRead[i]);
       }
       Serial.println();
-      _filePos = (_filePos == _fileSize - 4) ? _filePos : _filePos + 4;
+      _filePos = (_filePos == _fileSize - 4) ? _filePos : _filePos + 4; //if end of file stay there
       Parse(_dataRead);
+      _route = 1;
       break;
   }
 }
@@ -230,6 +198,10 @@ void VBD_Handler::SetDelayTime(int delayTime) {
 
 void VBD_Handler::SetFilePos(int filePos) {
   _filePos = filePos;
+}
+
+int VBD_Handler::GetFilePos() {
+  return _filePos;
 }
 
 void VBD_Handler::SetFileSize(unsigned long fileSize) {
